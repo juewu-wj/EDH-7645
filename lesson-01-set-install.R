@@ -33,7 +33,7 @@ x
 
 ## Try commenting/uncommenting the below line
 
-# EDH7916 <- "Hi"
+# EDH7645 <- "Hi"
 
 ## ---------------------------------------------------------
 ##' [Data Types & Structures]
