@@ -3,7 +3,7 @@
 ##' [PROJ: Project Title]
 ##' [FILE: Script Purpose]
 ##' [INIT: Date]
-##' [AUTH: Matt Capaldi] @ttalVlatt
+##' [AUTH: Name] 
 ##
 ## -----------------------------------------------------------------------------
 

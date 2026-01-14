@@ -1,6 +1,6 @@
 ## -----------------------------------------------------------------------------
 ##
-##' [PROJ: EDH 7916]
+##' [PROJ: EDH 7645]
 ##' [FILE: Data wrangling II: Appending, joining, and reshaping data]
 ##' [INIT: 31 January 2020]
 ##' [AUTH: Benjamin Skinner @btskinner]

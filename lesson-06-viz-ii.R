@@ -1,6 +1,6 @@
 ## -----------------------------------------------------------------------------
 ##
-##' [PROJ: EDH 7916]
+##' [PROJ: EDH 7645]
 ##' [FILE: Data visualization with ggplot2 - Customization]
 ##' [INIT: 9 March 2020]
 ##' [AUTH: Benjamin Skinner @btskinner]
