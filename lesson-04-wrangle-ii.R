@@ -6,7 +6,7 @@
 ##' [AUTH: Benjamin Skinner @btskinner]
 ##' [EDIT: Matt Capaldi @ttalVlatt]
 ##' [EDIT: Jue Wu]
-##' [UPDT: 15 January 2025]
+##' [UPDT: 03 February 2026]
 ##
 ## -----------------------------------------------------------------------------
 
