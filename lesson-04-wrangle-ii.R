@@ -69,6 +69,15 @@ data_sum <- data |>
 ## show
 data_sum
 
+## left join
+left_join(data, data_sum, by = "year")
+
+## Note: if we want to keep the joined data, we should assign it to data_join
+data_join <- left_join(data, data_sum, by = "year")
+
+## show
+data_join
+
 ## start with our dataframe...
 data_joined <- data |>
     ## pipe into left_join to join with data_sum using "year" as key
@@ -92,12 +101,6 @@ data |>
 data |>
   left_join(data_sum,
             by = "year")
-
-## Note: if we want to keep the joined data, we should assign it to data_join
-data_join <- data |>
-  left_join(data_sum,
-            by = "year")
-
 
 ## -----------------------------------------------------------------------------
 ##' [Reshape data]
