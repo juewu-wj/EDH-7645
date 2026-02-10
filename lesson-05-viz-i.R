@@ -124,14 +124,17 @@ ggplot(plot_data) +
                alpha = 0.5,
                color = "black")
 
+
+
 ##' [Box Plot]
 
-## box plot using both factor() and as_factor()
+## box plot using factor() 
 ggplot(data = data_hs,
        mapping = aes(x = factor(x1paredu),
                      y = x1txmtscor,
                      fill = factor(x1paredu))) +
   geom_boxplot()
+
 
 ##' [Scatterplot]
 
