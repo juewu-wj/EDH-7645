@@ -5,6 +5,7 @@ Use the `hsls-small.dta` data set (the version used in this class) make plots th
 
 - Throughout, you **should** account for missing values by dropping them
 - Do not worry about axis labels or other visual elements, that is covered next week
+- Please do remember to interpret your plots and answer the questions
 
 > Hint: You're going to need the [code book](https://nces.ed.gov/datalab/onlinecodebook) to identify the necessary variables
 
