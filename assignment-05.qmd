@@ -15,7 +15,7 @@ library(tidyverse)
 
 **a)** Recreate the challenge plot using the data provided on the assignment page of the class website 
 
-To successfully complete the assignment, write ggplot2 code that creates a plot that closely resembles the below plot
+To successfully complete the assignment, write ggplot2 code that creates a plot that closely resembles the plot above
  
 -   For the full 5 points, the information portrayed needs to be identical with _reasonably_ similar aesthetics
 
