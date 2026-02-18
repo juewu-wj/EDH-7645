@@ -180,56 +180,6 @@ ggplot(data = data_hs_10, mapping = aes(x = x1ses, y = x1txmtscor)) +
   geom_point(mapping = aes(color = factor(plan_col_grad)), alpha = 0.5) +
   geom_smooth(method = loess, color = "black")
 
-##' [Line Graph]
-
-## show test score data
-data_ts
-
-## line graph
-ggplot(data = data_ts |> filter(school == "Spottsville"),
-       mapping = aes(x = year, y = math)) +
-  geom_line()
-
-## line graph for math scores at every school over time
-ggplot(data = data_ts,
-       mapping = aes(x = year, y = math, color = school)) +
-  geom_line()
-
-## facet line graph
-ggplot(data = data_ts,
-       mapping = aes(x = year, y = math)) +
-  facet_wrap(~ school) +
-  geom_line()
-
-## reshape data long
-data_ts_long <- data_ts |>
-  pivot_longer(cols = c("math","read","science"), # cols to pivot long
-               names_to = "test",                 # where col names go
-               values_to = "score")               # where col values go
-
-## show
-data_ts_long
-
-## facet line graph, with colour = test and ~school
-ggplot(data = data_ts_long) +
-  geom_line(mapping = aes(x = year, y = score, color = test)) +
-  facet_wrap(~school)
-
-data_ts_long_std <- data_ts_long |>
-  group_by(test, school) |>
-  arrange(year) |> 
-  mutate(score_year_one = first(score),
-         ## note that we're using score_year_one instead of mean(score)
-         score_std_sch = (score - score_year_one) / sd(score)) |>
-  ungroup()
-
-print(data_ts_long_std, n = 13)
-
-## facet line graph, with colour = test and ~school
-ggplot(data = data_ts_long_std) +
-  geom_line(mapping = aes(x = year, y = score_std_sch, color = test)) +
-  facet_wrap(~school)
-
 
 ## -----------------------------------------------------------------------------
 ##' *END SCRIPT*
