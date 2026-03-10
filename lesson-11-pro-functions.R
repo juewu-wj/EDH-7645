@@ -20,7 +20,7 @@ plot <- ggplot(data) +
 data_sum <- data |>
   summarize(mean = mean(x1txmtscor, na.rm = T))
 
-uf_age <- 2025 - 1853
+uf_age <- 2026 - 1853
 
 ## -----------------------------------------------------------------------------
 ##' [For Loops]
@@ -38,7 +38,7 @@ gators_points_23 <- c(11, 49, 29, 22, 14, 38, 41, 20, 36, 35, 31, 15)
 
 for(i in gators_points_23) { print(i) }
 
-for(billy_napier in gators_points_23) { print(billy_napier) }
+for(gator_fans in gators_points_23) { print(gator_fans) }
 
 for(i in gators_points_23) {
   if(i > 30) {
