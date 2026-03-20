@@ -15,8 +15,6 @@ setwd(this.path::here())
 ## ---------------------------
 
 library(tidyverse)
-library(dbplyr)
-library(RSQLite)
 
 
 ## ---------------------------
@@ -136,6 +134,85 @@ data_18_clean |>
                                  TRUE ~ NA)) |>
   count(highest_cat)
 
+selected_files <- c("HD2021", "EFFY2022", "SFA2122")
+
+## OR
+
+selected_files <- c(
+  "HD2021",
+  "EFFY2022",
+  "SFA2122"
+)
+
+selected_files <- c(
+  "HD2021",
+  # "IC2022",
+  # "IC2022_AY",
+  "EFFY2022",
+  # "EFFY2022_DIST",
+  "SFA2122"
+)
+
+library(haven)
+library(labelled)
+
+data_info <- read_dta("data/hd2021.dta")
+data_enroll <- read_dta("data/effy2022.dta")
+data_aid <- read_dta("data/sfa2122.dta")
+
+data <- left_join(data_info, data_enroll, by = "unitid") |>
+  left_join(data_aid, by = "unitid")
+
+nrow(data)
+
+data |> count(effylev)
+
+
+data <- data |> filter(effylev == 2)
+
+
+data |>
+  group_by(obereg) |>
+  summarize(median_perc_out_of_state = median(scfa13p, na.rm = TRUE))
+
+
+
+data |>
+  group_by(as_factor(obereg)) |>
+  summarize(median_perc_out_of_state = median(scfa13p, na.rm = TRUE))
+
+ggplot(data |> filter(efytotlt < 50000),
+       aes(x = efytotlt,
+           y = scfa13p)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 0.8)) +
+  facet_wrap(~obereg)
+
+ggplot(data |> filter(efytotlt < 50000),
+       aes(x = efytotlt,
+           y = scfa13p)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 0.8)) +
+  labs(x = var_label(data$efytotlt),
+       y = var_label(data$scfa13p)) +
+  facet_wrap(~as_factor(obereg))
+
+ggplot(data |> filter(efytotlt < 50000),
+       aes(x = efytotlt,
+           y = scfa13p)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 0.8)) +
+  labs(x = var_label(data$efytotlt),
+       y = str_wrap(var_label(data$scfa13p), 40)) +
+  facet_wrap(~as_factor(obereg),
+             labeller = label_wrap_gen(multi_line = TRUE))
+
 # install.packages("tidycensus")
 # library(tidycensus)
 library(tidycensus)
@@ -218,155 +295,3 @@ data_target <- read_csv("data/targets.csv")
 
 data_target |>
   count(SubTypeDescription)
-
-## ---------------------------
-##' [Data Wrangling I in SQL]
-## ---------------------------
-
-df <- read_csv(file.path("data", "hsls-small.csv"))
-
-df |>
-  ## select columns we want
-  select(stu_id, x1stuedexpct, x1paredexpct, x1region) |>
-  ## If expectation is -8, -9. or 11, make it NA
-  mutate(student_exp = ifelse(x1stuedexpct %in% list(-8, -9, 11), NA, x1stuedexpct),
-         parent_exp = ifelse(x1paredexpct %in% list(-8, -9, 11), NA, x1paredexpct)) |>
-  ## Make a new variable called high_exp that is the higher or parent and student exp
-  mutate(high_exp = ifelse(student_exp > parent_exp, student_exp, parent_exp)) |>
-  ## If one exp is NA but the other isn't, keep the value not the NA
-  mutate(high_exp = ifelse(is.na(high_exp) & !is.na(student_exp), student_exp, high_exp),
-         high_exp = ifelse(is.na(high_exp) & !is.na(parent_exp), parent_exp, high_exp)) |>
-  ## Drop is high_exp is still NA (neither parent or student answered)
-  filter(!is.na(high_exp)) |>
-  ## Group the results by region
-  group_by(x1region) |>
-  ## Get the mean of high_exp (by region)
-  summarize(mean_exp = mean(high_exp))
-
-## ---------------------------
-##' [dbplyr SQL Setup]
-## ---------------------------
-
-
-microsoft_access <- simulate_access()
-
-db <- memdb_frame(df)
-
-
-
-db |>
-  ## select columns we want
-  select(stu_id, x1stuedexpct, x1paredexpct, x1region) |>
-  ## If expectation is -8, -9. or 11, make it NA
-  mutate(student_exp = ifelse(x1stuedexpct %in% list(-8, -9, 11), NA, x1stuedexpct),
-         parent_exp = ifelse(x1paredexpct %in% list(-8, -9, 11), NA, x1paredexpct)) |>
-  ## Make a new variable called high_exp that is the higher or parent and student exp
-  mutate(high_exp = ifelse(student_exp > parent_exp, student_exp, parent_exp)) |>
-  ## If one exp is NA but the other isn't, keep the value not the NA
-  mutate(high_exp = ifelse(is.na(high_exp) & !is.na(student_exp), student_exp, high_exp),
-         high_exp = ifelse(is.na(high_exp) & !is.na(parent_exp), parent_exp, high_exp)) |>
-  ## Drop is high_exp is still NA (neither parent or student answereed)
-  filter(!is.na(high_exp)) |>
-  ## Group the results by region
-  group_by(x1region) |>
-  ## Get the mean of high_exp (by region)
-  summarize(mean_exp = mean(high_exp)) |>
-  show_query()
-
-
-## ---------------------------
-##' [Step-by-Step Breakdown]
-## ---------------------------
-
-db |>
-  ## select columns we want
-  select(stu_id, x1stuedexpct, x1paredexpct, x1region) |>
-  show_query()
-
-db |>
-  ## select columns we want
-  select(stu_id, x1stuedexpct, x1paredexpct, x1region) |>
-  ## If expectation is -8, -9. or 11, make it NA
-  mutate(student_exp = ifelse(x1stuedexpct %in% list(-8, -9, 11), NA, x1stuedexpct),
-         parent_exp = ifelse(x1paredexpct %in% list(-8, -9, 11), NA, x1paredexpct)) |>
-  show_query()
-
-
-db |>
-  ## select columns we want
-  select(stu_id, x1stuedexpct, x1paredexpct, x1region) |>
-  ## If expectation is -8, -9. or 11, make it NA
-  mutate(student_exp = ifelse(x1stuedexpct %in% list(-8, -9, 11), NA, x1stuedexpct),
-         parent_exp = ifelse(x1paredexpct %in% list(-8, -9, 11), NA, x1paredexpct)) |>
-  ## Make a new variable called high_exp that is the higher or parent and student exp
-  mutate(high_exp = ifelse(student_exp > parent_exp, student_exp, parent_exp)) |>
-  show_query()
-
-
-db |>
-  ## select columns we want
-  select(stu_id, x1stuedexpct, x1paredexpct, x1region) |>
-  ## If expectation is -8, -9. or 11, make it NA
-  mutate(student_exp = ifelse(x1stuedexpct %in% list(-8, -9, 11), NA, x1stuedexpct),
-         parent_exp = ifelse(x1paredexpct %in% list(-8, -9, 11), NA, x1paredexpct)) |>
-  ## Make a new variable called high_exp that is the higher or parent and student exp
-  mutate(high_exp = ifelse(student_exp > parent_exp, student_exp, parent_exp)) |>
-  ## If one exp is NA but the other isn't, keep the value not the NA
-  mutate(high_exp = ifelse(is.na(high_exp) & !is.na(student_exp), student_exp, high_exp),
-         high_exp = ifelse(is.na(high_exp) & !is.na(parent_exp), parent_exp, high_exp)) |>
-  show_query()
-
-db |>
-  ## select columns we want
-  select(stu_id, x1stuedexpct, x1paredexpct, x1region) |>
-  ## If expectation is -8, -9. or 11, make it NA
-  mutate(student_exp = ifelse(x1stuedexpct %in% list(-8, -9, 11), NA, x1stuedexpct),
-         parent_exp = ifelse(x1paredexpct %in% list(-8, -9, 11), NA, x1paredexpct)) |>
-  ## Make a new variable called high_exp that is the higher or parent and student exp
-  mutate(high_exp = ifelse(student_exp > parent_exp, student_exp, parent_exp)) |>
-  ## If one exp is NA but the other isn't, keep the value not the NA
-  mutate(high_exp = ifelse(is.na(high_exp) & !is.na(student_exp), student_exp, high_exp),
-         high_exp = ifelse(is.na(high_exp) & !is.na(parent_exp), parent_exp, high_exp)) |>
-  ## Drop is high_exp is still NA (neither parent or student answereed)
-  filter(!is.na(high_exp)) |>
-  show_query()
-
-db |>
-  ## select columns we want
-  select(stu_id, x1stuedexpct, x1paredexpct, x1region) |>
-  ## If expectation is -8, -9. or 11, make it NA
-  mutate(student_exp = ifelse(x1stuedexpct %in% list(-8, -9, 11), NA, x1stuedexpct),
-         parent_exp = ifelse(x1paredexpct %in% list(-8, -9, 11), NA, x1paredexpct)) |>
-  ## Make a new variable called high_exp that is the higher or parent and student exp
-  mutate(high_exp = ifelse(student_exp > parent_exp, student_exp, parent_exp)) |>
-  ## If one exp is NA but the other isn't, keep the value not the NA
-  mutate(high_exp = ifelse(is.na(high_exp) & !is.na(student_exp), student_exp, high_exp),
-         high_exp = ifelse(is.na(high_exp) & !is.na(parent_exp), parent_exp, high_exp)) |>
-  ## Drop is high_exp is still NA (neither parent or student answered)
-  filter(!is.na(high_exp)) |>
-  ## Group the results by region
-  group_by(x1region) |>
-  summarize(mean_exp = mean(high_exp)) |>
-  show_query()
-
-## ---------------------------
-##' [Pivot-Longer with Compound Names]
-## ---------------------------
-
-
-df_3 <- read_csv(file.path("data", "sch-test", "all-schools-wide.csv"))
-
-db_3 <- memdb_frame(df_3)
-
-print(db_3)
-
-
-## Note: change from DWII,dbplyr can't translate separate, or any stringr commands, so we have to be more sophisticated with our pivot_longer
-df_long_fix <- db_3 |>
-    ## NB: contains() looks for "19" in name: if there, it adds it to cols
-    pivot_longer(cols = contains("19"),
-                 names_to = c("test", "year"),
-                 names_sep = "_",
-                 values_to = "score") |>
-  show_query()
-
