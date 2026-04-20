@@ -105,7 +105,11 @@ ggplot() +
           aes(fill = mean_perc_intl_diff),
           size = 0.1) +
   geom_sf_text(data = shift_geometry(st_centroid(states_sf)),
-               aes(label = STUSPS))
+               aes(label = STUSPS)) +
+  labs(title = "Difference in International Student Enrollment at the Undergraduate vs Graduate Level by State",
+       x = NULL,
+       y = NULL,
+       fill = "Mean % Difference") 
 
 
 ## -----------------------------------------------------------------------------
