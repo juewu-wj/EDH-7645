@@ -81,7 +81,7 @@ library(sf)
 library(tigris)
 options(tigris_use_cache = TRUE)
 
-data_info_state <- data_info <- read_csv("data/hd2022.csv") |>
+data_info_state <- read_csv("data/hd2022.csv") |>
   rename_all(tolower) |>
   select(unitid, stabbr)
 
